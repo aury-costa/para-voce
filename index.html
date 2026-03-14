@@ -17,90 +17,46 @@
         }
 
         body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
+            margin: 0; font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #fdf6f6 0%, #e1e8ee 100%);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+            color: var(--text); display: flex; justify-content: center;
+            align-items: center; min-height: 100vh; overflow: hidden;
         }
 
         .container {
-            text-align: center;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            padding: 2.5rem;
-            border-radius: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-            width: 90%;
-            max-width: 450px;
-            border: 1px solid rgba(255,255,255,0.4);
+            text-align: center; background: var(--glass);
+            backdrop-filter: blur(15px); padding: 2.5rem;
+            border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            width: 90%; max-width: 450px; border: 1px solid rgba(255,255,255,0.4);
             position: relative;
         }
 
         h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--accent); margin-bottom: 10px; }
 
         .btn-love {
-            background: white;
-            border: 1px solid #eee;
-            padding: 12px 20px;
-            margin: 8px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--text);
-            font-weight: 500;
+            background: white; border: 1px solid #eee; padding: 12px 20px;
+            margin: 8px; border-radius: 15px; cursor: pointer;
+            transition: all 0.3s ease; color: var(--text); font-weight: 500;
         }
 
-        .btn-love:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(212, 165, 165, 0.2);
-        }
+        .btn-love:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); }
 
-        /* Botão ADM - Coração Discreto */
-        #admin-trigger {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            font-size: 18px;
-            color: var(--accent);
-            cursor: pointer;
-            opacity: 0.15;
-            z-index: 9999;
-        }
-
+        #admin-trigger { position: fixed; bottom: 15px; right: 15px; font-size: 18px; color: var(--accent); cursor: pointer; opacity: 0.15; z-index: 9999; }
         #admin-trigger:hover { opacity: 1; }
 
         #admin-panel, #user-view { display: none; }
-
         .gift-box { font-size: 45px; margin: 10px; display: inline-block; cursor: pointer; transition: 0.3s; }
         .gift-box:hover { transform: scale(1.2); }
 
         .rose-anim { font-size: 60px; animation: float 3s infinite ease-in-out; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        #logs { 
-            background: #fff; 
-            height: 150px; 
-            overflow-y: auto; 
-            border-radius: 10px; 
-            border: 1px solid #eee; 
-            margin-bottom: 10px; 
-            padding: 10px; 
-            font-size: 11px;
-            text-align: left;
-        }
+        #logs { background: #fff; height: 150px; overflow-y: auto; border-radius: 10px; border: 1px solid #eee; margin-bottom: 10px; padding: 10px; font-size: 11px; text-align: left; }
     </style>
 </head>
 <body>
 
     <div id="admin-trigger" onclick="openAdmin()">🤍</div>
-    
     <audio id="meu-player"></audio>
 
     <div class="container">
@@ -123,7 +79,7 @@
         <div id="admin-panel">
             <h3 style="color: var(--accent)">Monitoramento ADM</h3>
             <div id="logs">Carregando atividades...</div>
-            <button class="btn-love" onclick="location.reload()">Sair do Painel</button>
+            <button class="btn-love" onclick="location.reload()">Sair</button>
         </div>
     </div>
 
@@ -145,7 +101,6 @@
         const db = getDatabase(app);
         const player = document.getElementById('meu-player');
 
-        // Mensagem da Rosa
         const textoRosa = "Obrigado por ser minha melhor parte. Uma flor para outra flor... 🌸 Espero que o seu dia se torne ainda mais belo e feliz. É apenas um gesto simples, mas é de coração. Obrigado por existir!";
         set(ref(db, 'settings/messages'), textoRosa);
 
@@ -167,8 +122,8 @@
             }
         };
 
-        function explode(char) {
-            confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 }, shapes: [confetti.shapeFromText({ text: char, scalar: 2 })] });
+        function explode() {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#d4a5a5', '#ff0000', '#ffffff'] });
         }
 
         window.showRose = () => {
@@ -192,8 +147,8 @@
 
         window.tocar = (caminho, nome) => {
             player.src = caminho;
-            player.play().catch(e => console.log("Erro ao tocar:", e));
-            explode('🎶');
+            player.play().catch(e => alert("Verifique se o arquivo existe na pasta musicas!"));
+            explode();
             log(`Ouviu: ${nome}`);
         };
 
@@ -205,9 +160,8 @@
 
         window.gift = (i) => {
             const list = ["Chocolates! 🍫", "100 Corações! ❤️", "1000 Beijos! 💋", "Passeio comigo! 🚗", "Um desejo seu! ✨"];
-            const icons = ["🍫", "❤️", "💋", "🚗", "✨"];
             alert(list[i-1]);
-            explode(icons[i-1]);
+            explode();
             log(`Ganhou: ${list[i-1]}`);
         };
 
