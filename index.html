@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereal Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --bg: #fdf6f6;
+            --accent: #d4a5a5;
+            --text: #5a5a5a;
+            --glass: rgba(255, 255, 255, 0.85);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fdf6f6 0%, #e1e8ee 100%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid rgba(255,255,255,0.4);
+            position: relative;
+        }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--accent); margin-bottom: 10px; }
+
+        .btn-love {
+            background: white;
+            border: 1px solid #eee;
+            padding: 12px 20px;
+            margin: 8px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .btn-love:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 165, 165, 0.2);
+        }
+
+        /* Botão ADM - Coração Discreto */
+        #admin-trigger {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            font-size: 18px;
+            color: var(--accent);
+            cursor: pointer;
+            opacity: 0.15;
+            z-index: 9999;
+        }
+
+        #admin-trigger:hover { opacity: 1; }
+
+        #admin-panel, #user-view { display: none; }
+
+        .gift-box { font-size: 45px; margin: 10px; display: inline-block; cursor: pointer; transition: 0.3s; }
+        .gift-box:hover { transform: scale(1.2); }
+
+        .rose-anim { font-size: 60px; animation: float 3s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        #logs { 
+            background: #fff; 
+            height: 150px; 
+            overflow-y: auto; 
+            border-radius: 10px; 
+            border: 1px solid #eee; 
+            margin-bottom: 10px; 
+            padding: 10px; 
+            font-size: 11px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="admin-trigger" onclick="openAdmin()">🤍</div>
+    
+    <audio id="meu-player"></audio>
+
+    <div class="container">
+        <div id="login-screen">
+            <h1>Ethereal</h1>
+            <p>Para quem faz meu mundo girar.</p>
+            <button class="btn-love" onclick="startApp()">Entrar</button>
+        </div>
+
+        <div id="user-view">
+            <h1>Para Você</h1>
+            <div>
+                <button class="btn-love" onclick="showRose()">🌹 A Rosa</button>
+                <button class="btn-love" onclick="showMusic()">🎵 Sintonia</button>
+                <button class="btn-love" onclick="showGifts()">🎁 Destino</button>
+            </div>
+            <div id="content" style="margin-top: 30px; min-height: 120px;"></div>
+        </div>
+
+        <div id="admin-panel">
+            <h3 style="color: var(--accent)">Monitoramento ADM</h3>
+            <div id="logs">Carregando atividades...</div>
+            <button class="btn-love" onclick="location.reload()">Sair do Painel</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEn2r3a1H05Lq2bwm5D2UNS7OqiqL8Yl4",
+            authDomain: "love-me-efa5e.firebaseapp.com",
+            projectId: "love-me-efa5e",
+            storageBucket: "love-me-efa5e.firebasestorage.app",
+            messagingSenderId: "970609314310",
+            appId: "1:970609314310:web:7ebdd3da285377e4509187",
+            measurementId: "G-7T8V6FCSDE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const player = document.getElementById('meu-player');
+
+        // Mensagem da Rosa
+        const textoRosa = "Obrigado por ser minha melhor parte. Uma flor para outra flor... 🌸 Espero que o seu dia se torne ainda mais belo e feliz. É apenas um gesto simples, mas é de coração. Obrigado por existir!";
+        set(ref(db, 'settings/messages'), textoRosa);
+
+        window.startApp = () => {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('user-view').style.display = 'block';
+        };
+
+        window.openAdmin = () => {
+            const p = prompt("Acesso ADM:");
+            if(p === "uPseHqrA1OYlejZqpzQjtOkKtsq2") {
+                document.getElementById('user-view').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                onValue(ref(db, 'interactions'), (s) => {
+                    const l = document.getElementById('logs'); l.innerHTML = "";
+                    s.forEach(c => { l.innerHTML += `<div><strong>${c.val().t}</strong>: ${c.val().e}</div>`; });
+                    l.scrollTop = l.scrollHeight;
+                });
+            }
+        };
+
+        function explode(char) {
+            confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 }, shapes: [confetti.shapeFromText({ text: char, scalar: 2 })] });
+        }
+
+        window.showRose = () => {
+            onValue(ref(db, 'settings/messages'), (s) => {
+                document.getElementById('content').innerHTML = `
+                    <div class="rose-anim">🌹</div>
+                    <p style="font-family:'Dancing Script'; font-size:1.3rem;">${s.val()}</p>
+                `;
+                log("Abriu a Rosa");
+            }, { onlyOnce: true });
+        };
+
+        window.showMusic = () => {
+            document.getElementById('content').innerHTML = `
+                <p>O que vamos ouvir?</p>
+                <button class="btn-love" onclick="tocar('musicas/froid.mp3', 'Minha favorita')">🎵 Minha favorita</button>
+                <button class="btn-love" onclick="tocar('musicas/xama.mp3', 'Teu signo')">🐃 Teu signo</button>
+                <button class="btn-love" onclick="tocar('musicas/poesia.mp3', 'Fecha os olhos e viaja')">✍️ Fecha os olhos e viaja</button>
+            `;
+        };
+
+        window.tocar = (caminho, nome) => {
+            player.src = caminho;
+            player.play().catch(e => console.log("Erro ao tocar:", e));
+            explode('🎶');
+            log(`Ouviu: ${nome}`);
+        };
+
+        window.showGifts = () => {
+            let h = '<p>Escolha um presente:</p>';
+            for(let i=1; i<=5; i++) h += `<div class="gift-box" onclick="gift(${i})">🎁</div>`;
+            document.getElementById('content').innerHTML = h;
+        };
+
+        window.gift = (i) => {
+            const list = ["Chocolates! 🍫", "100 Corações! ❤️", "1000 Beijos! 💋", "Passeio comigo! 🚗", "Um desejo seu! ✨"];
+            const icons = ["🍫", "❤️", "💋", "🚗", "✨"];
+            alert(list[i-1]);
+            explode(icons[i-1]);
+            log(`Ganhou: ${list[i-1]}`);
+        };
+
+        function log(e) {
+            push(ref(db, 'interactions'), { e, t: new Date().toLocaleTimeString() });
+        }
+    </script>
+</body>
+</html>
