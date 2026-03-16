@@ -10,16 +10,17 @@
     
     <style>
         :root {
-            --bg: #fdf6f6;
-            --accent: #d4a5a5;
-            --text: #5a5a5a;
+            --accent: #ff85a2;
+            --text: #4a4a4a;
             --glass: rgba(255, 255, 255, 0.85);
         }
 
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #fdf6f6 0%, #e1e8ee 100%);
+            /* IMAGEM DE FUNDO DO STITCH */
+            background: url('fundo.png') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text);
             display: flex;
             justify-content: center;
@@ -28,29 +29,51 @@
             overflow: hidden;
         }
 
-        .container {
-            text-align: center;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            padding: 2.5rem;
-            border-radius: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-            width: 90%;
-            max-width: 450px;
-            border: 1px solid rgba(255,255,255,0.4);
-            position: relative;
+        /* EFEITO DE CORAÇÕES NEON FLUTUANTES */
+        .heart-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--accent); margin-bottom: 10px; }
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 133, 162, 0.6);
+            text-shadow: 0 0 15px rgba(255, 133, 162, 0.8);
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) scale(0); opacity: 0; }
+            50% { opacity: 1.9; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            background: var(--glass);
+            backdrop-filter: blur(8px);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 133, 162, 0.2);
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--accent); margin-bottom: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.05); }
 
         .btn-love {
             background: white;
-            border: 1px solid #eee;
+            border: 2px solid #ffdae3;
             padding: 12px 20px;
             margin: 8px;
-            border-radius: 15px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: var(--text);
             font-weight: 500;
         }
@@ -58,55 +81,53 @@
         .btn-love:hover {
             border-color: var(--accent);
             color: var(--accent);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(212, 165, 165, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 133, 162, 0.3);
         }
 
         #admin-trigger {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            font-size: 18px;
-            color: var(--accent);
-            cursor: pointer;
-            opacity: 0.15;
-            z-index: 9999;
+            position: fixed; bottom: 15px; right: 15px;
+            font-size: 18px; color: var(--accent);
+            cursor: pointer; opacity: 0.2; z-index: 9999;
         }
 
         #admin-trigger:hover { opacity: 1; }
 
         #admin-panel, #user-view { display: none; }
 
-        .gift-box { font-size: 45px; margin: 10px; display: inline-block; cursor: pointer; transition: 0.3s; }
-        .gift-box:hover { transform: scale(1.2); }
+        .gift-box { font-size: 50px; margin: 10px; display: inline-block; cursor: pointer; transition: 0.5s; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); }
+        .gift-box:hover { transform: rotate(15deg) scale(1.2); }
 
-        .rose-anim { font-size: 60px; animation: float 3s infinite ease-in-out; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-
-        #logs { 
-            background: #fff; 
-            height: 150px; 
-            overflow-y: auto; 
-            border-radius: 10px; 
-            border: 1px solid #eee; 
-            margin-bottom: 10px; 
-            padding: 10px; 
-            font-size: 11px;
-            text-align: left;
+        .rose-anim { font-size: 70px; animation: heartbeat 2s infinite ease-in-out; }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
+
+        .msg-reveal {
+            animation: fadeIn 1s ease-in;
+            font-size: 1.2rem;
+            color: #ff5c8a;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #logs { background: #fff; height: 150px; overflow-y: auto; border-radius: 10px; padding: 10px; font-size: 11px; text-align: left; }
     </style>
 </head>
 <body>
 
+    <div class="heart-bg" id="heartContainer"></div>
     <div id="admin-trigger" onclick="openAdmin()">🤍</div>
-    
     <audio id="meu-player"></audio>
 
     <div class="container">
         <div id="login-screen">
             <h1>Para Você</h1>
-            <p>Princesa.</p>
-            <button class="btn-love" onclick="startApp()">Entrar</button>
+            <p style="letter-spacing: 2px;">Minha Princesa.</p>
+            <button class="btn-love" onclick="startApp()">Entrar ♥️</button>
         </div>
 
         <div id="user-view">
@@ -116,11 +137,11 @@
                 <button class="btn-love" onclick="showMusic()">🎵 Sintonia</button>
                 <button class="btn-love" onclick="showGifts()">🎁 Destino</button>
             </div>
-            <div id="content" style="margin-top: 30px; min-height: 120px;"></div>
+            <div id="content" style="margin-top: 20px; min-height: 150px;"></div>
         </div>
 
         <div id="admin-panel">
-            <h3 style="color: var(--accent)">Monitoramento ADM</h3>
+            <h3>Monitoramento ADM</h3>
             <div id="logs">Carregando atividades...</div>
             <button class="btn-love" onclick="location.reload()">Sair do Painel</button>
         </div>
@@ -130,7 +151,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
 
-        // Configurações do seu Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBEn2r3a1H05Lq2bwm5D2UNS7OqiqL8Yl4",
             authDomain: "love-me-efa5e.firebaseapp.com",
@@ -145,13 +165,30 @@
         const db = getDatabase(app);
         const player = document.getElementById('meu-player');
 
-        // Mensagem Personalizada da Rosa
-        const textoRosa = "Uma flor para outra flor... 🌸 Espero que o seu dia se torne ainda mais belo e feliz. É apenas um gesto simples, mas é de coração. Obrigado por existir!";
+        // Cria corações flutuantes neon no fundo
+        function createFloatingHearts() {
+            const container = document.getElementById('heartContainer');
+            const heartIcons = ['❤️', '💖', '✨', '🌸'];
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                container.appendChild(heart);
+                setTimeout(() => heart.remove(), 7000);
+            }, 500);
+        }
+        createFloatingHearts();
+
+        const textoRosa = "Uma flor para outra flor.🌸 Espero que o seu dia se torne ainda mais feliz. É simples, mas é de coração, era exatamente esse sorriso bobo que eu queria!";
         set(ref(db, 'settings/messages'), textoRosa);
 
         window.startApp = () => {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('user-view').style.display = 'block';
+            explode();
         };
 
         window.openAdmin = () => {
@@ -161,28 +198,21 @@
                 document.getElementById('admin-panel').style.display = 'block';
                 onValue(ref(db, 'interactions'), (s) => {
                     const l = document.getElementById('logs'); l.innerHTML = "";
-                    s.forEach(c => { 
-                        l.innerHTML += `<div><strong>${c.val().t}</strong>: ${c.val().e}</div>`; 
-                    });
+                    s.forEach(c => { l.innerHTML += `<div><strong>${c.val().t}</strong>: ${c.val().e}</div>`; });
                     l.scrollTop = l.scrollHeight;
                 });
             }
         };
 
         function explode() {
-            confetti({ 
-                particleCount: 80, 
-                spread: 70, 
-                origin: { y: 0.6 },
-                colors: ['#d4a5a5', '#e89999', '#ffffff']
-            });
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ff85a2', '#ffdae3', '#ffffff'] });
         }
 
         window.showRose = () => {
             onValue(ref(db, 'settings/messages'), (s) => {
                 document.getElementById('content').innerHTML = `
                     <div class="rose-anim">🌹</div>
-                    <p style="font-family:'Dancing Script'; font-size:1.3rem; line-height: 1.4; padding: 0 10px;">${s.val()}</p>
+                    <p style="font-family:'Dancing Script'; font-size:1.4rem; padding: 10px; color:#5a5a5a;">${s.val()}</p>
                 `;
                 log("Abriu a Rosa");
             }, { onlyOnce: true });
@@ -190,7 +220,7 @@
 
         window.showMusic = () => {
             document.getElementById('content').innerHTML = `
-                <p>O que vamos ouvir?</p>
+                <p>Nossa trilha sonora...</p>
                 <button class="btn-love" onclick="tocar('./musicas/froid.mp3', 'Minha favorita')">🎵 Minha favorita</button>
                 <button class="btn-love" onclick="tocar('./musicas/xama.mp3', 'Teu signo')">🐃 Teu signo</button>
                 <button class="btn-love" onclick="tocar('./musicas/poesia.mp3', 'Fecha os olhos e viaja')">✍️ Fecha os olhos e viaja</button>
@@ -199,26 +229,37 @@
 
         window.tocar = (caminho, nome) => {
             player.src = caminho;
-            player.load(); // Importante para o GitHub Pages atualizar o arquivo
-            player.play().catch(e => {
-                console.error("Erro ao tocar:", e);
-                alert("Música não encontrada. Verifique se os arquivos estão na pasta 'musicas' em minúsculo.");
-            });
+            player.load();
+            player.play().catch(e => console.error("Erro áudio"));
             explode();
             log(`Ouviu: ${nome}`);
         };
 
         window.showGifts = () => {
-            let h = '<p>Toque para abrir um presente:</p>';
+            let h = '<p>Toque em uma caixa para descobrir...</p>';
             for(let i=1; i<=5; i++) h += `<div class="gift-box" onclick="gift(${i})">🎁</div>`;
             document.getElementById('content').innerHTML = h;
         };
 
         window.gift = (i) => {
-            const list = ["Chocolate! quando vc quiser 🍫", "1000 Corações! vc merece muitos ❤️", "1000 Beijos! um montão 💋", "Passeio comigo! onde vc quer ir? 🚗", "Um desejo seu! posso realizar? ✨"];
-            alert(list[i-1]);
-            explode();
-            log(`Ganhou: ${list[i-1]}`);
+            const list = [
+                {m: "Chocolate! quando vc quiser 🍫", e: "🍫"},
+                {m: "1000 Corações! vc merece muitos ❤️", e: "❤️"},
+                {m: "1000 Beijos! um montão 💋", e: "💋"},
+                {m: "Passeio comigo! onde vc quer ir? 🚗", e: "🚗"},
+                {m: "Um desejo seu! posso realizar? ✨", e: "✨"}
+            ];
+            
+            const item = list[i-1];
+            document.getElementById('content').innerHTML = `
+                <div style="font-size:80px; animation: heartbeat 1s infinite;">${item.e}</div>
+                <div class="msg-reveal">${item.m}</div>
+                <button class="btn-love" onclick="showGifts()" style="margin-top:15px; font-size:12px;">Abrir outra</button>
+            `;
+            
+            // Explosão temática
+            confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 }, shapes: [confetti.shapeFromText({ text: item.e, scalar: 2 })] });
+            log(`Ganhou: ${item.m}`);
         };
 
         function log(e) {
